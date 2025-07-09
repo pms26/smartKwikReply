@@ -1,4 +1,4 @@
-package com.smartKwikReply.smartKwikReply;
+package com.smartKwikReply;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
