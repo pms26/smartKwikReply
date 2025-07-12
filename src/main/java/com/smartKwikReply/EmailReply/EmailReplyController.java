@@ -1,19 +1,21 @@
 package com.smartKwikReply.EmailReply;
 
 import com.smartKwikReply.EmailReply.entity.EmailRequest;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-
+// http://localhost:9000/api/email-reply/reply
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/email-reply")
 public class EmailReplyController {
 
-    @GetMapping("/reply")
+    private final EmailReplyService emailReplyService;
+
+    @PostMapping("/reply")
     public ResponseEntity<?> getEmailReply(@RequestBody EmailRequest emailRequest) {
-        return ResponseEntity.ok("Email reply functionality is not implemented yet.");
+        String response= emailReplyService.generateEmailReply(emailRequest);
+        return ResponseEntity.ok(response);
     }
 }
