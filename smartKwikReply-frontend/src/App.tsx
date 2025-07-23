@@ -18,7 +18,7 @@ function App() {
     setErrors('')
     try {
       const res= 
-        await axios.post("/api/email-reply/reply",{emailContent,tone} );
+        await axios.post("/api/email-reply/reply",{content: emailContent,tone} );
         setGeneratedReply(typeof res.data === 'string'? res.data : JSON.stringify(res.data))
       }
       
