@@ -10,7 +10,7 @@
     ],
     "content_scripts": [
         {
-        "js": ["content.ts"],
+        "js": ["content.js"],
         "matches": ["*://mail.google.com/*"],
         "css": ["content.css"],
         "run_at": "document_end"

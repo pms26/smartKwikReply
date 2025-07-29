@@ -1,52 +1,49 @@
 console.log("Email Writer Extension - Content Script Loaded");
 
-function createAIButton(): HTMLDivElement {
-    const button = document.createElement('div');
-    button.className = 'T-I J-J5-Ji aoO v7 T-I-atl L3';
-    button.style.marginRight = '8px';
-    button.innerHTML = 'AI Reply';
-    button.setAttribute('role', 'button');
-    button.setAttribute('data-tooltip', 'Generate AI Reply');
-    return button;
+function createAIButton() {
+   const button = document.createElement('div');
+   button.className = 'T-I J-J5-Ji aoO v7 T-I-atl L3';
+   button.style.marginRight = '8px';
+   button.innerHTML = 'AI Reply';
+   button.setAttribute('role','button');
+   button.setAttribute('data-tooltip','Generate AI Reply');
+   return button;
 }
 
-function getEmailContent(): string {
+function getEmailContent() {
     const selectors = [
         '.h7',
         '.a3s.aiL',
         '.gmail_quote',
         '[role="presentation"]'
     ];
-
     for (const selector of selectors) {
-        const content = document.querySelector<HTMLElement>(selector);
+        const content = document.querySelector(selector);
         if (content) {
             return content.innerText.trim();
         }
+        return '';
     }
-
-    return '';
 }
 
-function findComposeToolbar(): HTMLElement | null {
+
+function findComposeToolbar() {
     const selectors = [
         '.btC',
         '.aDh',
         '[role="toolbar"]',
         '.gU.Up'
     ];
-
     for (const selector of selectors) {
-        const toolbar = document.querySelector<HTMLElement>(selector);
+        const toolbar = document.querySelector(selector);
         if (toolbar) {
             return toolbar;
         }
+        return null;
     }
-
-    return null;
 }
 
-function injectButton(): void {
+function injectButton() {
     const existingButton = document.querySelector('.ai-reply-button');
     if (existingButton) existingButton.remove();
 
@@ -63,7 +60,7 @@ function injectButton(): void {
     button.addEventListener('click', async () => {
         try {
             button.innerHTML = 'Generating...';
-            (button as unknown as HTMLButtonElement).disabled = true;
+            button.disabled = true;
 
             const emailContent = getEmailContent();
             const response = await fetch('http://localhost:9000/api/email-reply/reply', {
@@ -72,7 +69,7 @@ function injectButton(): void {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    emailContent,
+                    emailContent: emailContent,
                     tone: "professional"
                 })
             });
@@ -82,7 +79,7 @@ function injectButton(): void {
             }
 
             const generatedReply = await response.text();
-            const composeBox = document.querySelector<HTMLElement>('[role="textbox"][g_editable="true"]');
+            const composeBox = document.querySelector('[role="textbox"][g_editable="true"]');
 
             if (composeBox) {
                 composeBox.focus();
@@ -95,20 +92,19 @@ function injectButton(): void {
             alert('Failed to generate reply');
         } finally {
             button.innerHTML = 'AI Reply';
-            (button as unknown as HTMLButtonElement).disabled = false;
+            button.disabled =  false;
         }
     });
 
     toolbar.insertBefore(button, toolbar.firstChild);
 }
 
-const observer = new MutationObserver((mutations: MutationRecord[]) => {
-    for (const mutation of mutations) {
+const observer = new MutationObserver((mutations) => {
+    for(const mutation of mutations) {
         const addedNodes = Array.from(mutation.addedNodes);
         const hasComposeElements = addedNodes.some(node =>
-            node.nodeType === Node.ELEMENT_NODE &&
-            ((node as Element).matches?.('.aDh, .btC, [role="dialog"]') ||
-                (node as Element).querySelector?.('.aDh, .btC, [role="dialog"]'))
+            node.nodeType === Node.ELEMENT_NODE && 
+            (node.matches('.aDh, .btC, [role="dialog"]') || node.querySelector('.aDh, .btC, [role="dialog"]'))
         );
 
         if (hasComposeElements) {
@@ -117,6 +113,7 @@ const observer = new MutationObserver((mutations: MutationRecord[]) => {
         }
     }
 });
+
 
 observer.observe(document.body, {
     childList: true,
