@@ -69,7 +69,7 @@ function injectButton() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    emailContent: emailContent,
+                    content: emailContent,
                     tone: "professional"
                 })
             });
